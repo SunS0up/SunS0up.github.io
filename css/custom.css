@@ -1,0 +1,18 @@
+/* ===== 友链：让描述完整显示，卡片高度自适应 ===== */
+
+/* 主题把卡片高度写死成 90px 且 overflow: hidden，必须一起放开 */
+.flink-list-item {
+  height: auto !important;
+  min-height: 90px;
+}
+
+/* 主题给描述继承 .limit-one-line（单行 + 省略号），这里覆盖成完整显示 */
+.flink-item-desc {
+  display: block;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  height: auto;
+  line-height: 1.5;
+  padding-bottom: 16px;
+}
