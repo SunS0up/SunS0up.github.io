@@ -1,0 +1,384 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>从零搭建一个「国内能打开」的个人博客 —— 完整思路（小白踩坑实测+AI总结） | SunS0up的博客</title><meta name="author" content="SunS0up"><meta name="copyright" content="SunS0up"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写于 2026-11-02。本文不是泛泛的教程，而是把这套站真正跑通后回填的决策思路 + 踩坑记录。   按这个方法搭，成品形态：https:&#x2F;&#x2F;&lt;你的用户名&gt;.github.io&#x2F;，零成本、自动 HTTPS、国内直连可开。   全程实测环境：Windows + Node 24.21.0 + Hexo 8.1.2 + Butterfly 5.7.1。   0. 一句话结论用 Hexo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从零搭建一个「国内能打开」的个人博客 —— 完整思路（小白踩坑实测+AI总结）">
+<meta property="og:url" content="https://suns0up.github.io/2026/11/02/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E3%80%8C%E5%9B%BD%E5%86%85%E8%83%BD%E6%89%93%E5%BC%80%E3%80%8D%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2-%E2%80%94%E2%80%94-%E5%AE%8C%E6%95%B4%E6%80%9D%E8%B7%AF%EF%BC%88%E5%B0%8F%E7%99%BD%E8%B8%A9%E5%9D%91%E5%AE%9E%E6%B5%8B+AI%E6%80%BB%E7%BB%93%EF%BC%89/">
+<meta property="og:site_name" content="SunS0up的博客">
+<meta property="og:description" content="写于 2026-11-02。本文不是泛泛的教程，而是把这套站真正跑通后回填的决策思路 + 踩坑记录。   按这个方法搭，成品形态：https:&#x2F;&#x2F;&lt;你的用户名&gt;.github.io&#x2F;，零成本、自动 HTTPS、国内直连可开。   全程实测环境：Windows + Node 24.21.0 + Hexo 8.1.2 + Butterfly 5.7.1。   0. 一句话结论用 Hexo">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://suns0up.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2026-11-02T09:40:11.000Z">
+<meta property="article:modified_time" content="2026-11-02T10:00:44.630Z">
+<meta property="article:author" content="SunS0up">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://suns0up.github.io/img/avatar.jpg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "从零搭建一个「国内能打开」的个人博客 —— 完整思路（小白踩坑实测+AI总结）",
+  "url": "https://suns0up.github.io/2026/11/02/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E3%80%8C%E5%9B%BD%E5%86%85%E8%83%BD%E6%89%93%E5%BC%80%E3%80%8D%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2-%E2%80%94%E2%80%94-%E5%AE%8C%E6%95%B4%E6%80%9D%E8%B7%AF%EF%BC%88%E5%B0%8F%E7%99%BD%E8%B8%A9%E5%9D%91%E5%AE%9E%E6%B5%8B+AI%E6%80%BB%E7%BB%93%EF%BC%89/",
+  "image": "https://suns0up.github.io/img/avatar.jpg",
+  "datePublished": "2026-11-02T09:40:11.000Z",
+  "dateModified": "2026-11-02T10:00:44.630Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "SunS0up",
+      "url": "https://suns0up.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://suns0up.github.io/2026/11/02/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E3%80%8C%E5%9B%BD%E5%86%85%E8%83%BD%E6%89%93%E5%BC%80%E3%80%8D%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2-%E2%80%94%E2%80%94-%E5%AE%8C%E6%95%B4%E6%80%9D%E8%B7%AF%EF%BC%88%E5%B0%8F%E7%99%BD%E8%B8%A9%E5%9D%91%E5%AE%9E%E6%B5%8B+AI%E6%80%BB%E7%BB%93%EF%BC%89/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.7.1.260810"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.3.1/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        try {
+          const data = { value }
+
+          if (ttl != null) {
+            data.expiry = Date.now() + ttl * 86400000
+          }
+
+          localStorage.setItem(key, JSON.stringify(data))
+        } catch (e) {
+          console.error(e)
+        }
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return
+
+        try {
+          const data = JSON.parse(itemStr)
+
+          if (data.expiry && Date.now() > data.expiry) {
+            localStorage.removeItem(key)
+            return
+          }
+
+          return data.value
+        } catch {
+          localStorage.removeItem(key)
+        }
+      }
+    }
+
+    const scriptCache = new Map()
+    const cssCache = new Map()
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => {
+        if (scriptCache.has(url)) {
+          return scriptCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const script = document.createElement('script')
+
+          script.src = url
+          script.async = true
+
+          for (const key in attr) {
+            script.setAttribute(key, attr[key])
+          }
+
+          script.onload = resolve
+          script.onerror = reject
+
+          document.head.appendChild(script)
+        })
+
+        scriptCache.set(url, promise)
+
+        return promise
+      },
+      getCSS: (url, id) => {
+        if (cssCache.has(url)) {
+          return cssCache.get(url)
+        }
+
+        const promise = new Promise((resolve, reject) => {
+          const link = document.createElement('link')
+
+          link.rel = 'stylesheet'
+          link.href = url
+
+          if (id) {
+            link.id = id
+          }
+
+          link.onload = resolve
+          link.onerror = reject
+
+          document.head.appendChild(link)
+        })
+
+        cssCache.set(url, promise)
+
+        return promise
+      },
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+      const activateDarkMode = () => {
+        document.documentElement.dataset.theme = 'dark'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.dataset.theme = 'light'
+        if (metaThemeColor !== null) {
+          metaThemeColor.setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.13.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '从零搭建一个「国内能打开」的个人博客 —— 完整思路（小白踩坑实测+AI总结）',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.2"></head><body><div class="bg-animation" id="web_bg" style="background-image: url(/img/bg.jpg);"></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">SunS0up的博客</span></a><a class="nav-page-title" href="/"><span class="site-name">从零搭建一个「国内能打开」的个人博客 —— 完整思路（小白踩坑实测+AI总结）</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">从零搭建一个「国内能打开」的个人博客 —— 完整思路（小白踩坑实测+AI总结）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-02T09:40:11.000Z" title="发表于 2026-11-02 17:40:11">2026-11-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-02T10:00:44.630Z" title="更新于 2026-11-02 18:00:44">2026-11-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>写于 2026-11-02。本文不是泛泛的教程，而是把这套站真正跑通后回填的<strong>决策思路 + 踩坑记录</strong>。</p>
+</blockquote>
+<blockquote>
+<p>按这个方法搭，成品形态：<code>https://&lt;你的用户名&gt;.github.io/</code>，零成本、自动 HTTPS、国内直连可开。</p>
+</blockquote>
+<blockquote>
+<p>全程实测环境：Windows + Node 24.21.0 + Hexo 8.1.2 + Butterfly 5.7.1。</p>
+</blockquote>
+<hr>
+<h2 id="0-一句话结论"><a href="#0-一句话结论" class="headerlink" title="0. 一句话结论"></a>0. 一句话结论</h2><p><strong>用 Hexo 写、用 Butterfly 美化、用 GitHub Pages 托管。</strong></p>
+<p>不要一上来就想 Vercel &#x2F; 自定义域名 —— 这两个是后话，而且极可能让你的站「在全球可用、在国内打不开」。</p>
+<hr>
+<h2 id="1-三个硬约束，先想清楚再选技术"><a href="#1-三个硬约束，先想清楚再选技术" class="headerlink" title="1. 三个硬约束，先想清楚再选技术"></a>1. 三个硬约束，先想清楚再选技术</h2><p>搭站之前先问自己三件事，答案直接决定选型：</p>
+<p>| 约束 | 你的情况 | 影响 |</p>
+<p>| — | — | — |</p>
+<p>| 要不要花钱 | 不花 | 排除自己买服务器 &#x2F; 云主机 |</p>
+<p>| 访客主要在哪 | 国内 | <strong>这是最狠的一条</strong>，直接砍掉一半方案 |</p>
+<p>| 谁维护 | 我自己，偶尔写文章 | 越少运维越好，最好是 <code>git push</code> 就完事 |</p>
+<h3 id="1-1-选型对比（实测结论，不是理论）"><a href="#1-1-选型对比（实测结论，不是理论）" class="headerlink" title="1.1 选型对比（实测结论，不是理论）"></a>1.1 选型对比（实测结论，不是理论）</h3><p>| 方案 | 国内可访问 | 成本 | 结论 |</p>
+<p>| — | — | — | — |</p>
+<p>| <strong>GitHub Pages</strong> | ✅ 实测可连 | 免费 | <strong>选它</strong> |</p>
+<p>| Vercel | ❌ <code>*.vercel.app</code> 被 DNS 污染 | 免费 | 只在能稳定挂代理时考虑 |</p>
+<p>| Cloudflare Pages | ⚠️ <code>*.pages.dev</code> 同样不稳 | 免费 | 备选 |</p>
+<p>| Netlify | ⚠️ 不稳 | 免费 | 备选 |</p>
+<p>| 国内云 + 备案 | ✅ 最稳 | 服务器费 + 备案周期 | 认真做站再考虑 |</p>
+<h3 id="1-2-为什么「Vercel-自定义域名」这条路被我放弃了"><a href="#1-2-为什么「Vercel-自定义域名」这条路被我放弃了" class="headerlink" title="1.2 为什么「Vercel + 自定义域名」这条路被我放弃了"></a>1.2 为什么「Vercel + 自定义域名」这条路被我放弃了</h3><p>原本的打算是 Vercel 配 <code>xxx.vercel.app</code>，再绑一个免费域名 <code>xxx.cc.cd</code>。实测两个都死，而且死法不同：</p>
+<p><strong>① vercel.app —— DNS 污染</strong></p>
+<p>同一时刻查同一个域名，国内 DNS 和真实 IP 完全不同：</p>
+<p>| 查询来源 | 返回 IP | 真相 |</p>
+<p>| — | — | — |</p>
+<p>| 本机 &#x2F; 阿里公共 DNS | <code>31.13.69.169</code> | 这是 <strong>Facebook 的 IP</strong>，纯属伪造 |</p>
+<p>| 阿里 DNS 查 <code>vercel.app</code> 顶级 | <code>202.182.98.125</code> | 同样是假地址 |</p>
+<p>| 外部服务（非中国网络）访问该站 | <strong>HTTP 200，标题正确</strong> | 站点本身完全正常 |</p>
+<p>结论：Vercel 那边部署得好好的，<strong>是 DNS 把国内访客送到假 IP 上</strong>。换 DNS、换 Wi-Fi、用流量都没用。</p>
+<p><strong>② cc.cd 域名 —— SNI 层整段封锁</strong></p>
+<p>做了一组对照实验（同一个 IP、只换 SNI）：</p>
+<p>| 目标 | IP | SNI | 结果 |</p>
+<p>| — | — | — | — |</p>
+<p>| <code>cc.cd</code> | 13.250.16.35（AWS 新加坡，与 Vercel 无关） | <code>cc.cd</code> | <strong>ECONNRESET</strong> |</p>
+<p>| 同一个 IP | 13.250.16.35 | <code>example.com</code> | ✅ 握手成功 |</p>
+<p>| 同一个 IP | 13.250.16.35 | <code>amazonaws.com</code> | ✅ 握手成功 |</p>
+<p>同一台服务器，TLS 握手里只要带 <code>cc.cd</code> 就被重置，换个域名就通 —— 说明封的是<strong>域名后缀本身</strong>，跟主机、IP、配置全都无关。</p>
+<p><strong>教训：免费域名后缀（cc.cd、de5.net 这类）因为滥用严重，整段进了黑名单。换什么托管都救不回来。要自定义域名，就买 <code>.com</code> &#x2F; <code>.net</code> &#x2F; <code>.top</code>，几十块一年，别省这个钱。</strong></p>
+<hr>
+<h2 id="2-整体架构"><a href="#2-整体架构" class="headerlink" title="2. 整体架构"></a>2. 整体架构</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">你的电脑 GitHub GitHub Pages</span><br><span class="line"></span><br><span class="line">┌──────────────────┐ git push ┌──────────────┐ ┌─────────────┐</span><br><span class="line"></span><br><span class="line">│ Hexo 源码 │ ───────────&gt; │ main 分支 │ 构建发布 │ 全球 CDN │</span><br><span class="line"></span><br><span class="line">│ ├ source/_posts │ (只推成品) │ 只有 html/css │ ────────&gt; │ *.github.io │</span><br><span class="line"></span><br><span class="line">│ ├ themes/butterfly│ │ /js/img │ └─────────────┘</span><br><span class="line"></span><br><span class="line">│ └ _config*.yml │ └──────────────┘</span><br><span class="line"></span><br><span class="line">└──────────────────┘</span><br><span class="line"></span><br><span class="line">↓ hexo generate</span><br><span class="line"></span><br><span class="line">public/（成品 21 个文件）</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>关键认知：仓库里不放主题源码，只放构建成品。</strong></p>
+<p>| 角色 | 负责什么 | 你不需要操心什么 |</p>
+<p>| — | — | — |</p>
+<p>| Hexo | Markdown → HTML | 数据库、后端、服务器 |</p>
+<p>| Butterfly 主题 | Pug 模板 + Stylus 样式 → 页面外观 | 手写 CSS |</p>
+<p>| GitHub 仓库 | 存成品 + 当版本备份 | 买服务器、配 Nginx |</p>
+<p>| GitHub Pages | 托管 + HTTPS 证书 + CDN | 部署脚本、证书续期 |</p>
+<p>实测：本地主题源码 <strong>217 个文件</strong>，推到仓库的成品只有 <strong>21 个文件</strong>（含 <code>css/index.css</code> 204 KB —— 那就是主题的 Stylus 编译结果）。</p>
+<hr>
+<h2 id="3-搭建步骤"><a href="#3-搭建步骤" class="headerlink" title="3. 搭建步骤"></a>3. 搭建步骤</h2><h3 id="3-1-环境"><a href="#3-1-环境" class="headerlink" title="3.1 环境"></a>3.1 环境</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">node <span class="literal">-v</span> <span class="comment"># 需要 ≥ 20.19（Hexo 8.x 硬性要求），实测 24.21.0</span></span><br><span class="line"></span><br><span class="line">git <span class="literal">--version</span></span><br><span class="line"></span><br><span class="line">npm config <span class="built_in">set</span> registry https://registry.npmmirror.com <span class="comment"># 国内换源</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-建站"><a href="#3-2-建站" class="headerlink" title="3.2 建站"></a>3.2 建站</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">npm install <span class="literal">-g</span> hexo<span class="literal">-cli</span></span><br><span class="line"></span><br><span class="line">hexo init my<span class="literal">-blog</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> my<span class="literal">-blog</span></span><br><span class="line"></span><br><span class="line">npm install</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>生成的结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">my-blog/</span><br><span class="line"></span><br><span class="line">├── _config.yml ★ 站点配置（标题、作者、url）</span><br><span class="line"></span><br><span class="line">├── _config.butterfly.yml ★ 主题外观配置（由主题提供）</span><br><span class="line"></span><br><span class="line">├── package.json</span><br><span class="line"></span><br><span class="line">├── scaffolds/ 文章模板</span><br><span class="line"></span><br><span class="line">├── source/</span><br><span class="line"></span><br><span class="line">│ ├── _posts/ ★ 文章都放这里</span><br><span class="line"></span><br><span class="line">│ └── img/ ★ 自定义图片</span><br><span class="line"></span><br><span class="line">├── themes/ 主题源码</span><br><span class="line"></span><br><span class="line">└── public/ 构建成品（不提交）</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-装主题（以-Butterfly-为例）"><a href="#3-3-装主题（以-Butterfly-为例）" class="headerlink" title="3.3 装主题（以 Butterfly 为例）"></a>3.3 装主题（以 Butterfly 为例）</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="built_in">cd</span> themes</span><br><span class="line"></span><br><span class="line">git clone <span class="literal">-b</span> master https://github.com/jerryc127/hexo<span class="literal">-theme-butterfly</span>.git butterfly</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> ..</span><br><span class="line"></span><br><span class="line">npm install hexo<span class="literal">-renderer-pug</span> hexo<span class="literal">-renderer-stylus</span> <span class="comment"># 主题依赖，必须装</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>把 <code>themes/butterfly/_config.yml</code> 复制成项目根目录的 <code>_config.butterfly.yml</code>，之后<strong>只改根目录这份</strong>——这样主题升级不会覆盖你的配置。</p>
+<h3 id="3-4-必改配置清单（最容易漏的就是这些）"><a href="#3-4-必改配置清单（最容易漏的就是这些）" class="headerlink" title="3.4 必改配置清单（最容易漏的就是这些）"></a>3.4 必改配置清单（最容易漏的就是这些）</h3><p><code>_config.yml</code>：</p>
+<p>| 配置 | 值 | 为什么必须改 |</p>
+<p>| — | — | — |</p>
+<p>| <code>url</code> | <code>https://&lt;用户名&gt;.github.io</code> | 不改的话 canonical、分享卡片全指向 <code>example.com</code> |</p>
+<p>| <code>root</code> | <code>/</code> | 用户站是根路径 |</p>
+<p>| <code>pretty_urls.trailing_index</code> | <code>false</code> | 否则 canonical 带 <code>/index.html</code>，像半成品 |</p>
+<p>| <code>theme</code> | <code>Butterfly</code> | 注意大小写要对上文件夹名 |</p>
+<p>| <code>include</code> | <code>- .nojekyll</code> | ★ 见坑 6.1，不加这行 <code>.nojekyll</code> 永远上不去 |</p>
+<p>| <code>deploy.ignore_hidden</code> | <code>false</code> | ★ 见坑 6.2，否则 <code>hexo deploy</code> 会跳过隐藏文件 |</p>
+<p><code>_config.butterfly.yml</code>：</p>
+<p>| 配置 | 说明 |</p>
+<p>| — | — |</p>
+<p>| <code>avatar.img</code> | 头像路径，如 <code>/img/avatar.jpg</code> |</p>
+<p>| <code>favicon</code> | 标签页图标，如 <code>/img/favicon.png</code> |</p>
+<p>| <code>background</code> | 整站背景，<strong>写纯路径</strong> <code>/img/bg.jpg</code>，别写 <code>url(...)</code>（见坑 6.4） |</p>
+<p>| <code>index_img</code> | 首页顶部大图 |</p>
+<p>| <code>subtitle</code> | 首页副标题（见坑 6.5，<code>effect</code> 语义是反的） |</p>
+<p>| <code>card_author.description</code> | 头像下面的自我简介 |</p>
+<h3 id="3-5-本地预览"><a href="#3-5-本地预览" class="headerlink" title="3.5 本地预览"></a>3.5 本地预览</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">hexo clean; hexo generate; hexo server</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>打开 <a target="_blank" rel="noopener" href="http://localhost:4000/">http://localhost:4000</a> 。改 Markdown 会自动刷新；<strong>改配置必须 <code>hexo clean</code></strong>，否则缓存的 <code>db.json</code> 会让你以为「改了没生效」。</p>
+<hr>
+<h2 id="4-上线：三条发布路径"><a href="#4-上线：三条发布路径" class="headerlink" title="4. 上线：三条发布路径"></a>4. 上线：三条发布路径</h2><h3 id="路径-A：hexo-deploy（日常用这个）"><a href="#路径-A：hexo-deploy（日常用这个）" class="headerlink" title="路径 A：hexo deploy（日常用这个）"></a>路径 A：<code>hexo deploy</code>（日常用这个）</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">hexo clean; hexo generate; hexo deploy</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>原理：<code>hexo-deployer-git</code> 把 <code>public/</code> 复制进 <code>.deploy_git</code>，提交后 <strong><code>git push --force</code></strong> 到 <code>main</code>。</p>
+<p>优点：一条命令。缺点：force push，且<strong>不保证触发 Pages 构建</strong>（实测三次部署，零次触发）。</p>
+<h3 id="路径-B：GitHub-Git-Data-API（CI-无-shell-环境用）"><a href="#路径-B：GitHub-Git-Data-API（CI-无-shell-环境用）" class="headerlink" title="路径 B：GitHub Git Data API（CI&#x2F;无 shell 环境用）"></a>路径 B：GitHub Git Data API（CI&#x2F;无 shell 环境用）</h3><p>适合没法 <code>git push</code> 的场景。五步走：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">POST /git/blobs 每个文件转成 git 对象（base64，兼容图片）</span><br><span class="line"></span><br><span class="line">POST /git/trees 组成目录树（不带 base_tree 可顺带清掉旧文件）</span><br><span class="line"></span><br><span class="line">POST /git/commits 生成提交（parent = 当前 HEAD）</span><br><span class="line"></span><br><span class="line">PATCH /git/refs/heads/main 移动分支</span><br><span class="line"></span><br><span class="line">POST /pages/builds 强制触发 Pages 构建（关键，绕过 push）</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>最后一步是精髓：<strong>不依赖 push 触发，直接让 Pages 重新构建</strong>，绕开「force push 不触发」这个坑。</p>
+<h3 id="路径-C：GitHub-Actions-自动构建（最省心的长期方案）"><a href="#路径-C：GitHub-Actions-自动构建（最省心的长期方案）" class="headerlink" title="路径 C：GitHub Actions 自动构建（最省心的长期方案）"></a>路径 C：GitHub Actions 自动构建（最省心的长期方案）</h3><p>仓库里存源码，push 后由 Action 跑 <code>hexo generate</code> 并发布。优点：push 必触发、不需要本地构建、换电脑无影响。代价：一次性配置成本 + Pages 源要切成「GitHub Actions」。</p>
+<p><strong>建议：先用 A 跑通，站点稳定后再升到 C。</strong></p>
+<hr>
+<h2 id="5-内容工作流"><a href="#5-内容工作流" class="headerlink" title="5. 内容工作流"></a>5. 内容工作流</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="built_in">cd</span> my<span class="literal">-blog</span></span><br><span class="line"></span><br><span class="line">hexo new <span class="string">&quot;文章标题&quot;</span> <span class="comment"># 生成 source/_posts/文章标题.md</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">title: 文章标题</span><br><span class="line"></span><br><span class="line">date: 2026-11-02 10:30:00</span><br><span class="line"></span><br><span class="line">tags: [Hexo, 建站]</span><br><span class="line"></span><br><span class="line">categories: 建站</span><br><span class="line"></span><br><span class="line">---</span><br><span class="line"></span><br><span class="line">正文用 Markdown 写，图片这样引：</span><br><span class="line"></span><br><span class="line">![<span class="string">说明</span>](<span class="link">/img/图片名.png</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>文件名会变成 URL 的一部分，<strong>建议用英文或拼音</strong>（<code>hexo-deploy-notes.md</code>），中文会被 URL 编码成一长串。</p>
+</blockquote>
+<p>发布：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">hexo clean; hexo generate; hexo deploy</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="6-踩坑清单（这部分最值钱）"><a href="#6-踩坑清单（这部分最值钱）" class="headerlink" title="6. 踩坑清单（这部分最值钱）"></a>6. 踩坑清单（这部分最值钱）</h2><h3 id="6-1-nojekyll-一直部署不上去"><a href="#6-1-nojekyll-一直部署不上去" class="headerlink" title="6.1 .nojekyll 一直部署不上去"></a>6.1 <code>.nojekyll</code> 一直部署不上去</h3><p><strong>现象</strong>：仓库里始终没有 <code>.nojekyll</code>，Pages 会拿 Jekyll 再处理一遍产物，可能直接构建失败变 404。</p>
+<p><strong>原因</strong>：Hexo 处理 <code>source/</code> 时<strong>默认忽略以 <code>.</code> 开头的隐藏文件</strong>，你放进 <code>source/.nojekyll</code> 也没用。</p>
+<p><strong>解法</strong>：在 <code>_config.yml</code> 里显式登记：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="attr">include:</span></span><br><span class="line"></span><br><span class="line"><span class="bullet">-</span> <span class="string">.nojekyll</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-hexo-deploy-会跳过隐藏文件"><a href="#6-2-hexo-deploy-会跳过隐藏文件" class="headerlink" title="6.2 hexo deploy 会跳过隐藏文件"></a>6.2 <code>hexo deploy</code> 会跳过隐藏文件</h3><p><strong>原因</strong>：<code>hexo-deployer-git</code> 调 <code>fs.copyDir(public, deploy)</code>，其中 <code>ignoreHidden</code> 默认开启。</p>
+<p><strong>解法</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line"></span><br><span class="line"><span class="attr">type:</span> <span class="string">git</span></span><br><span class="line"></span><br><span class="line"><span class="attr">ignore_hidden:</span> <span class="literal">false</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-3-force-push-之后-Pages-不重建"><a href="#6-3-force-push-之后-Pages-不重建" class="headerlink" title="6.3 force push 之后 Pages 不重建"></a>6.3 force push 之后 Pages 不重建</h3><p><strong>现象</strong>：<code>hexo deploy</code> 显示成功，网站却还是旧内容。</p>
+<p><strong>原因</strong>：<code>deployer.js</code> 里写死了 <code>git push -u &lt;repo&gt; HEAD:main --force</code>；实测三次 force push 一次都没触发构建。</p>
+<p><strong>解法</strong>：部署后去 Settings → Pages 重新 Save 一次，或走路径 B 的 <code>POST /pages/builds</code>。</p>
+<p><strong>顺带一个坑</strong>：Actions 里的「Re-run all jobs」<strong>是重放旧运行</strong>，认死原来那个 commit（实测重跑了一次，它执意发布的是一个只有 <code>.gitignore</code> 的空提交）。要新内容必须让 HEAD 动。</p>
+<h3 id="6-4-background-写成-url-会生成坏链接"><a href="#6-4-background-写成-url-会生成坏链接" class="headerlink" title="6.4 background 写成 url(...) 会生成坏链接"></a>6.4 <code>background</code> 写成 <code>url(...)</code> 会生成坏链接</h3><p><strong>现象</strong>：页面背景不显示，源码里是 <code>background-image: url(/url(/img/bg.jpg))</code>。</p>
+<p><strong>原因</strong>：主题的 <code>getBgPath()</code> 会自己包一层 <code>url()</code>，你再写 <code>url()</code> 就套了两层，前面的 <code>/</code> 还会被 <code>url_for</code> 拼进去。</p>
+<p><strong>解法</strong>：只写纯路径。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="attr">background:</span> <span class="string">/img/bg.jpg</span> <span class="comment"># ✅</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># background: url(/img/bg.jpg) # ❌</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="6-5-副标题的-effect-语义是反的"><a href="#6-5-副标题的-effect-语义是反的" class="headerlink" title="6.5 副标题的 effect 语义是反的"></a>6.5 副标题的 <code>effect</code> 语义是反的</h3><p><strong>现象</strong>：按注释写 <code>effect: true</code>（Typewriter Effect）结果副标题不显示，或者莫名依赖 CDN。</p>
+<p><strong>原因</strong>：模板里是 <code>if (!{effect})</code> —— 那个 <code>!</code> <strong>不是 JS 取反</strong>，是 Pug 的非转义插值语法。<code>effect: false</code> 生成 <code>if (false)</code> 反而走静态分支；<code>effect: true</code> 会去 <code>cdn.jsdelivr.net</code> 拉 typed.js。</p>
+<p><strong>解法</strong>：要静态文字就写 <code>effect: false</code>。国内网络建议静态，别赌 CDN 能加载。</p>
+<h3 id="6-6-Pages-首次构建只建了个空提交"><a href="#6-6-Pages-首次构建只建了个空提交" class="headerlink" title="6.6 Pages 首次构建只建了个空提交"></a>6.6 Pages 首次构建只建了个空提交</h3><p><strong>现象</strong>：仓库说有 Pages，访问却全站 404，连 <code>/index.html</code> 都 404。</p>
+<p><strong>原因</strong>：Pages 只在启用时构建了那个只有 <code>.gitignore</code> 的初始提交，之后的内容推送因故没触发新构建。</p>
+<p><strong>解法</strong>：让它从当前 HEAD 重新构建（路径 B 的 <code>POST /pages/builds</code>，或在网页上做一次真实提交）。</p>
+<h3 id="6-7-改了东西「没变化」"><a href="#6-7-改了东西「没变化」" class="headerlink" title="6.7 改了东西「没变化」"></a>6.7 改了东西「没变化」</h3><p>90% 是浏览器缓存，尤其是 favicon（Chrome 能缓存好几天）。</p>
+<p>判断方法：<strong>无痕窗口</strong>打开，或直接访问单个资源 URL（<code>/img/favicon.png</code>）。无痕里正常 &#x3D; 纯缓存问题，<code>Ctrl + F5</code> 或清站点数据即可。</p>
+<hr>
+<h2 id="7-验收清单（部署后逐条过）"><a href="#7-验收清单（部署后逐条过）" class="headerlink" title="7. 验收清单（部署后逐条过）"></a>7. 验收清单（部署后逐条过）</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">□ curl -I https://&lt;用户&gt;.github.io/ → 200</span><br><span class="line"></span><br><span class="line">□ 首页 &lt;title&gt; 正确</span><br><span class="line"></span><br><span class="line">□ 文章页可打开、标题正确</span><br><span class="line"></span><br><span class="line">□ /archives/ 可打开</span><br><span class="line"></span><br><span class="line">□ canonical 是干净的绝对地址（不带 /index.html）</span><br><span class="line"></span><br><span class="line">□ 静态资源 200：/css/index.css、/js/main.js、/img/xxx</span><br><span class="line"></span><br><span class="line">□ http:// 自动 301 到 https://</span><br><span class="line"></span><br><span class="line">□ 仓库里有 .nojekyll</span><br><span class="line"></span><br><span class="line">□ 仓库里没有 public/、node_modules/ 之类的垃圾</span><br><span class="line"></span><br><span class="line">□ 站点总体积合理（实测 21 文件 / 0.95 MB）</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>最后一条容易被忽略：把 2.8 MB 的原图直接丢进 <code>source/img/</code> 会一起打包发布，站点体积会从 0.95 MB 涨到 3.7 MB。<strong>发布前先压缩</strong>（头像 400×400 &#x2F; 37 KB 足够）。</p>
+<hr>
+<h2 id="8-后续演进"><a href="#8-后续演进" class="headerlink" title="8. 后续演进"></a>8. 后续演进</h2><p>| 阶段 | 做什么 | 收益 |</p>
+<p>| — | — | — |</p>
+<p>| 现在 | Hexo + Butterfly + Pages | 零成本、可写文章 |</p>
+<p>| 下一步 | 换成 GitHub Actions 自动构建 | push 即上线，不依赖本地 |</p>
+<p>| 再下一步 | 买 <code>.com</code> 域名 + 绑 Pages | 品牌化、可迁移 |</p>
+<p>| 可选 | 加评论（giscus &#x2F; Waline）、搜索、访问统计 | 互动性 |</p>
+<p><strong>关于自定义域名，两条硬提醒</strong>：</p>
+<ol>
+<li><p>别用免费后缀（<code>cc.cd</code>、<code>de5.net</code>、<code>eu.org</code> 之类），整段被封的例子太多。</p>
+</li>
+<li><p>域名解析要指向 Pages 的四个 IP（<code>185.199.108-111.153</code>），并在仓库 Settings → Pages 里填 Custom domain，然后开 Enforce HTTPS。</p>
+</li>
+</ol>
+<hr>
+<h2 id="附录-A：命令速查"><a href="#附录-A：命令速查" class="headerlink" title="附录 A：命令速查"></a>附录 A：命令速查</h2><p>| 命令 | 作用 |</p>
+<p>| — | — |</p>
+<p>| <code>hexo new &quot;标题&quot;</code> | 新建文章 |</p>
+<p>| <code>hexo new page &quot;about&quot;</code> | 新建独立页面 |</p>
+<p>| <code>hexo server</code> | 本地预览（:4000） |</p>
+<p>| <code>hexo generate</code> | 构建到 <code>public/</code> |</p>
+<p>| <code>hexo deploy</code> | 发布 |</p>
+<p>| <code>hexo clean</code> | 清缓存（改配置后必做） |</p>
+<h2 id="附录-B：成品结构（实测-21-个文件-0-95-MB）"><a href="#附录-B：成品结构（实测-21-个文件-0-95-MB）" class="headerlink" title="附录 B：成品结构（实测 21 个文件 &#x2F; 0.95 MB）"></a>附录 B：成品结构（实测 21 个文件 &#x2F; 0.95 MB）</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">.nojekyll</span><br><span class="line"></span><br><span class="line">index.html</span><br><span class="line"></span><br><span class="line">2026/11/01/hello-world/index.html</span><br><span class="line"></span><br><span class="line">archives/index.html</span><br><span class="line"></span><br><span class="line">archives/2026/index.html</span><br><span class="line"></span><br><span class="line">archives/2026/11/index.html</span><br><span class="line"></span><br><span class="line">css/index.css (204 KB，主题样式)</span><br><span class="line"></span><br><span class="line">css/var.css</span><br><span class="line"></span><br><span class="line">js/main.js</span><br><span class="line"></span><br><span class="line">js/utils.js</span><br><span class="line"></span><br><span class="line">js/tw_cn.js</span><br><span class="line"></span><br><span class="line">js/search/algolia.js</span><br><span class="line"></span><br><span class="line">js/search/local-search.js</span><br><span class="line"></span><br><span class="line">img/avatar.jpg (41 KB)</span><br><span class="line"></span><br><span class="line">img/bg.jpg (113 KB)</span><br><span class="line"></span><br><span class="line">img/favicon.png (60 KB)</span><br><span class="line"></span><br><span class="line">img/404.jpg</span><br><span class="line"></span><br><span class="line">img/error-page.png</span><br><span class="line"></span><br><span class="line">img/friend_404.gif</span><br><span class="line"></span><br><span class="line">img/butterfly-icon.png</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="最后：一个反直觉的经验"><a href="#最后：一个反直觉的经验" class="headerlink" title="最后：一个反直觉的经验"></a>最后：一个反直觉的经验</h2><p>这套东西真正难的不是「怎么搭」，而是**「搭好了为什么国内打不开」**。</p>
+<p>所以顺序应该是：</p>
+<ol>
+<li><p>先用 <code>github.io</code> 直链跑通（国内实测可连）</p>
+</li>
+<li><p>确认能开、能发文章</p>
+</li>
+<li><p><strong>再</strong>考虑自定义域名和高级托管</p>
+</li>
+</ol>
+<p>反过来做（先折腾 Vercel + 免费域名），你会在「明明部署成功了却打不开」上耗掉一整天，而且最后大概率还得退回来。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://suns0up.github.io">SunS0up</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://suns0up.github.io/2026/11/02/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E3%80%8C%E5%9B%BD%E5%86%85%E8%83%BD%E6%89%93%E5%BC%80%E3%80%8D%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2-%E2%80%94%E2%80%94-%E5%AE%8C%E6%95%B4%E6%80%9D%E8%B7%AF%EF%BC%88%E5%B0%8F%E7%99%BD%E8%B8%A9%E5%9D%91%E5%AE%9E%E6%B5%8B+AI%E6%80%BB%E7%BB%93%EF%BC%89/">https://suns0up.github.io/2026/11/02/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E3%80%8C%E5%9B%BD%E5%86%85%E8%83%BD%E6%89%93%E5%BC%80%E3%80%8D%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2-%E2%80%94%E2%80%94-%E5%AE%8C%E6%95%B4%E6%80%9D%E8%B7%AF%EF%BC%88%E5%B0%8F%E7%99%BD%E8%B8%A9%E5%9D%91%E5%AE%9E%E6%B5%8B+AI%E6%80%BB%E7%BB%93%EF%BC%89/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://suns0up.github.io" target="_blank">SunS0up的博客</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/11/01/hello-world/" title="Hello World"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Hello World</div></div><div class="info-2"><div class="info-item-1">Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick StartCreate a new post1$ hexo new &quot;My New Post&quot;  More info: Writing Run server1$ hexo server  More info: Server Generate static files1$ hexo generate  More info: Generating Deploy to remote sites1$ hexo deploy  More info: Deployment </div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">SunS0up</div><div class="author-info-description">Be curious forever</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/SunS0up"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0-%E4%B8%80%E5%8F%A5%E8%AF%9D%E7%BB%93%E8%AE%BA"><span class="toc-number">1.</span> <span class="toc-text">0. 一句话结论</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%89%E4%B8%AA%E7%A1%AC%E7%BA%A6%E6%9D%9F%EF%BC%8C%E5%85%88%E6%83%B3%E6%B8%85%E6%A5%9A%E5%86%8D%E9%80%89%E6%8A%80%E6%9C%AF"><span class="toc-number">2.</span> <span class="toc-text">1. 三个硬约束，先想清楚再选技术</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E9%80%89%E5%9E%8B%E5%AF%B9%E6%AF%94%EF%BC%88%E5%AE%9E%E6%B5%8B%E7%BB%93%E8%AE%BA%EF%BC%8C%E4%B8%8D%E6%98%AF%E7%90%86%E8%AE%BA%EF%BC%89"><span class="toc-number">2.1.</span> <span class="toc-text">1.1 选型对比（实测结论，不是理论）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E3%80%8CVercel-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%9F%E5%90%8D%E3%80%8D%E8%BF%99%E6%9D%A1%E8%B7%AF%E8%A2%AB%E6%88%91%E6%94%BE%E5%BC%83%E4%BA%86"><span class="toc-number">2.2.</span> <span class="toc-text">1.2 为什么「Vercel + 自定义域名」这条路被我放弃了</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="toc-number">3.</span> <span class="toc-text">2. 整体架构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%90%AD%E5%BB%BA%E6%AD%A5%E9%AA%A4"><span class="toc-number">4.</span> <span class="toc-text">3. 搭建步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E7%8E%AF%E5%A2%83"><span class="toc-number">4.1.</span> <span class="toc-text">3.1 环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%BB%BA%E7%AB%99"><span class="toc-number">4.2.</span> <span class="toc-text">3.2 建站</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E8%A3%85%E4%B8%BB%E9%A2%98%EF%BC%88%E4%BB%A5-Butterfly-%E4%B8%BA%E4%BE%8B%EF%BC%89"><span class="toc-number">4.3.</span> <span class="toc-text">3.3 装主题（以 Butterfly 为例）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E5%BF%85%E6%94%B9%E9%85%8D%E7%BD%AE%E6%B8%85%E5%8D%95%EF%BC%88%E6%9C%80%E5%AE%B9%E6%98%93%E6%BC%8F%E7%9A%84%E5%B0%B1%E6%98%AF%E8%BF%99%E4%BA%9B%EF%BC%89"><span class="toc-number">4.4.</span> <span class="toc-text">3.4 必改配置清单（最容易漏的就是这些）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E6%9C%AC%E5%9C%B0%E9%A2%84%E8%A7%88"><span class="toc-number">4.5.</span> <span class="toc-text">3.5 本地预览</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E4%B8%8A%E7%BA%BF%EF%BC%9A%E4%B8%89%E6%9D%A1%E5%8F%91%E5%B8%83%E8%B7%AF%E5%BE%84"><span class="toc-number">5.</span> <span class="toc-text">4. 上线：三条发布路径</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%AF%E5%BE%84-A%EF%BC%9Ahexo-deploy%EF%BC%88%E6%97%A5%E5%B8%B8%E7%94%A8%E8%BF%99%E4%B8%AA%EF%BC%89"><span class="toc-number">5.1.</span> <span class="toc-text">路径 A：hexo deploy（日常用这个）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%AF%E5%BE%84-B%EF%BC%9AGitHub-Git-Data-API%EF%BC%88CI-%E6%97%A0-shell-%E7%8E%AF%E5%A2%83%E7%94%A8%EF%BC%89"><span class="toc-number">5.2.</span> <span class="toc-text">路径 B：GitHub Git Data API（CI&#x2F;无 shell 环境用）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%AF%E5%BE%84-C%EF%BC%9AGitHub-Actions-%E8%87%AA%E5%8A%A8%E6%9E%84%E5%BB%BA%EF%BC%88%E6%9C%80%E7%9C%81%E5%BF%83%E7%9A%84%E9%95%BF%E6%9C%9F%E6%96%B9%E6%A1%88%EF%BC%89"><span class="toc-number">5.3.</span> <span class="toc-text">路径 C：GitHub Actions 自动构建（最省心的长期方案）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%86%85%E5%AE%B9%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="toc-number">6.</span> <span class="toc-text">5. 内容工作流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E8%B8%A9%E5%9D%91%E6%B8%85%E5%8D%95%EF%BC%88%E8%BF%99%E9%83%A8%E5%88%86%E6%9C%80%E5%80%BC%E9%92%B1%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">6. 踩坑清单（这部分最值钱）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-nojekyll-%E4%B8%80%E7%9B%B4%E9%83%A8%E7%BD%B2%E4%B8%8D%E4%B8%8A%E5%8E%BB"><span class="toc-number">7.1.</span> <span class="toc-text">6.1 .nojekyll 一直部署不上去</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-hexo-deploy-%E4%BC%9A%E8%B7%B3%E8%BF%87%E9%9A%90%E8%97%8F%E6%96%87%E4%BB%B6"><span class="toc-number">7.2.</span> <span class="toc-text">6.2 hexo deploy 会跳过隐藏文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-force-push-%E4%B9%8B%E5%90%8E-Pages-%E4%B8%8D%E9%87%8D%E5%BB%BA"><span class="toc-number">7.3.</span> <span class="toc-text">6.3 force push 之后 Pages 不重建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-background-%E5%86%99%E6%88%90-url-%E4%BC%9A%E7%94%9F%E6%88%90%E5%9D%8F%E9%93%BE%E6%8E%A5"><span class="toc-number">7.4.</span> <span class="toc-text">6.4 background 写成 url(...) 会生成坏链接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-5-%E5%89%AF%E6%A0%87%E9%A2%98%E7%9A%84-effect-%E8%AF%AD%E4%B9%89%E6%98%AF%E5%8F%8D%E7%9A%84"><span class="toc-number">7.5.</span> <span class="toc-text">6.5 副标题的 effect 语义是反的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-6-Pages-%E9%A6%96%E6%AC%A1%E6%9E%84%E5%BB%BA%E5%8F%AA%E5%BB%BA%E4%BA%86%E4%B8%AA%E7%A9%BA%E6%8F%90%E4%BA%A4"><span class="toc-number">7.6.</span> <span class="toc-text">6.6 Pages 首次构建只建了个空提交</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-7-%E6%94%B9%E4%BA%86%E4%B8%9C%E8%A5%BF%E3%80%8C%E6%B2%A1%E5%8F%98%E5%8C%96%E3%80%8D"><span class="toc-number">7.7.</span> <span class="toc-text">6.7 改了东西「没变化」</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E9%AA%8C%E6%94%B6%E6%B8%85%E5%8D%95%EF%BC%88%E9%83%A8%E7%BD%B2%E5%90%8E%E9%80%90%E6%9D%A1%E8%BF%87%EF%BC%89"><span class="toc-number">8.</span> <span class="toc-text">7. 验收清单（部署后逐条过）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%90%8E%E7%BB%AD%E6%BC%94%E8%BF%9B"><span class="toc-number">9.</span> <span class="toc-text">8. 后续演进</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95-A%EF%BC%9A%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5"><span class="toc-number">10.</span> <span class="toc-text">附录 A：命令速查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95-B%EF%BC%9A%E6%88%90%E5%93%81%E7%BB%93%E6%9E%84%EF%BC%88%E5%AE%9E%E6%B5%8B-21-%E4%B8%AA%E6%96%87%E4%BB%B6-0-95-MB%EF%BC%89"><span class="toc-number">11.</span> <span class="toc-text">附录 B：成品结构（实测 21 个文件 &#x2F; 0.95 MB）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%EF%BC%9A%E4%B8%80%E4%B8%AA%E5%8F%8D%E7%9B%B4%E8%A7%89%E7%9A%84%E7%BB%8F%E9%AA%8C"><span class="toc-number">12.</span> <span class="toc-text">最后：一个反直觉的经验</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/02/%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E3%80%8C%E5%9B%BD%E5%86%85%E8%83%BD%E6%89%93%E5%BC%80%E3%80%8D%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2-%E2%80%94%E2%80%94-%E5%AE%8C%E6%95%B4%E6%80%9D%E8%B7%AF%EF%BC%88%E5%B0%8F%E7%99%BD%E8%B8%A9%E5%9D%91%E5%AE%9E%E6%B5%8B+AI%E6%80%BB%E7%BB%93%EF%BC%89/" title="从零搭建一个「国内能打开」的个人博客 —— 完整思路（小白踩坑实测+AI总结）">从零搭建一个「国内能打开」的个人博客 —— 完整思路（小白踩坑实测+AI总结）</a><time datetime="2026-11-02T09:40:11.000Z" title="发表于 2026-11-02 17:40:11">2026-11-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/01/hello-world/" title="Hello World">Hello World</a><time datetime="2026-11-01T12:04:03.081Z" title="发表于 2026-11-01 20:04:03">2026-11-01</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By SunS0up</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.2</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.7.1.260810</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.7.1.260810"></script><script src="/js/main.js?v=5.7.1.260810"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
