@@ -9,6 +9,8 @@
 - [留言](https://suns0up.github.io/guestbook/): 欢迎在这里留下你的足迹，分享你的想法和建议
 
 ## Recent Posts
+- [JavaScript 语法基础](https://suns0up.github.io/posts/javascript-basics/): 变量、类型、函数、数组方法、对象解构、异步与 DOM 操作，附一份高频踩坑清单。
+- [CSS 语法基础](https://suns0up.github.io/posts/css-basics/): 选择器、盒模型、Flex 布局、定位与优先级计算，附一份高频踩坑清单。
 - [HTML 语法基础](https://suns0up.github.io/posts/html-basics/): 标签、属性、文档结构与常用元素，配一个可以直接运行的完整页面。
 - [从零搭建一个「国内能打开」的个人博客 —— 完整思路](https://suns0up.github.io/posts/build-blog-from-scratch/): Hexo + Butterfly + GitHub Pages 的完整搭建思路、发布链路、7 个踩坑与验收清单。
 - [Hello World](https://suns0up.github.io/posts/hello-world/): 第一篇文章，记录这个博客的起点。
